@@ -104,6 +104,7 @@ export type IChatItem = {
 }
 
 export type MessageEnd = {
+  retriever_resources: any
   id: string
   metadata: {
     retriever_resources?: CitationItem[]
