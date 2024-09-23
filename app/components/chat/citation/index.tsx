@@ -1,3 +1,4 @@
+// app/components/chat/citation/index.tsx
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'

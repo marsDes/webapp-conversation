@@ -139,7 +139,7 @@ const Main: FC = () => {
           })
           newChatList.push({
             id: item.id,
-            content: item.answer + 22,
+            content: item.answer,
             agent_thoughts: addFileInfos(item.agent_thoughts ? sortAgentSorts(item.agent_thoughts) : item.agent_thoughts, item.message_files),
             feedback: item.feedback,
             isAnswer: true,
@@ -500,13 +500,16 @@ const Main: FC = () => {
 
               draft.push({
                 ...responseItem,
+                citations: messageEnd.retriever_resources, // Add citations here
               })
             })
           setChatList(newListWithAnswer)
           return
         }
-        // not support show citation
-        // responseItem.citation = messageEnd.retriever_resources
+        // Handle citations if they exist
+        if (messageEnd.retriever_resources)
+          responseItem.citation = messageEnd.retriever_resources // Store citations
+
         const newListWithAnswer = produce(
           getChatList().filter(item => item.id !== responseItem.id && item.id !== placeholderAnswerId),
           (draft) => {

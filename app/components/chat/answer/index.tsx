@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
@@ -76,6 +76,12 @@ const Answer: FC<IAnswerProps> = ({
   config,
 }) => {
   const { id, content, feedback, agent_thoughts, workflowProcess, suggestedQuestions, citation } = item
+  const [localCitation, setLocalCitation] = useState(citation)
+
+  useEffect(() => {
+    setLocalCitation(citation)
+  }, [citation, id]) // Add id to dependencies to ensure update on new answers
+
   const isAgentMode = !!agent_thoughts && agent_thoughts.length > 0
   const { t } = useTranslation()
 
@@ -177,7 +183,7 @@ const Answer: FC<IAnswerProps> = ({
   )
 
   return (
-    <div key={id}>
+    <div key={`${id}-${content}-${JSON.stringify(citation)}`}>
       <div className='flex items-start'>
         <div className={`${s.answerIcon} w-10 h-10 shrink-0`}>
           {isResponding
@@ -206,11 +212,11 @@ const Answer: FC<IAnswerProps> = ({
                       {suggestedQuestions
                         ? (
                           <SuggestedQuestions
-                            onHandleSend={onHandleSend}
+                            onHandleSend={onHandleSend as (message: string) => void}
                             suggestedQuestions={suggestedQuestions}
                           />
                         )
-                        : null}
+                        : undefined}
                     </>
                   ))}
             </div>
@@ -222,7 +228,13 @@ const Answer: FC<IAnswerProps> = ({
           </div>
         </div>
       </div>
+      {localCitation && localCitation.length > 0 && (
+        <Citation
+          data={localCitation}
+          showHitInfo={config?.supportCitationHitInfo}
+        />
+      )}
     </div>
   )
 }
-export default React.memo(Answer)
+export default Answer // Remove React.memo() here

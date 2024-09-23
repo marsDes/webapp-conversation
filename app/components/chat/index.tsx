@@ -12,7 +12,6 @@ import type { FeedbackFunc } from './type'
 import VoiceInput from './answer/voice-input'
 import { Microphone01 } from '@/app/components/base/icons/line/mediaAndDevices'
 import { Microphone01 as Microphone01Solid } from '@/app/components/base/icons/solid/mediaAndDevices'
-
 import type { ChatItem, VisionFile, VisionSettings } from '@/types/app'
 import { TransferMethod } from '@/types/app'
 import Tooltip from '@/app/components/base/tooltip'
@@ -63,6 +62,12 @@ const Chat: FC<IChatProps> = ({
   const isUseInputMethod = useRef(false)
 
   const [query, setQuery] = React.useState('')
+  const [updateCounter, setUpdateCounter] = useState(0)
+
+  useEffect(() => {
+    setUpdateCounter(prev => prev + 1)
+  }, [chatList])
+
   const handleContentChange = (e: any) => {
     const value = e.target.value
     setQuery(value)
@@ -148,14 +153,14 @@ const Chat: FC<IChatProps> = ({
   }
 
   return (
-    <div className={cn(!feedbackDisabled && 'px-3.5', 'h-full')}>
+    <div className={cn(!feedbackDisabled && 'px-3.5', 'h-full')} key={updateCounter}>
       {/* Chat List */}
       <div className="h-full space-y-[30px]">
         {chatList.map((item) => {
           if (item.isAnswer) {
             const isLast = item.id === chatList[chatList.length - 1].id
             return <Answer
-              key={item.id}
+              key={`${item.id}-${item.content}-${JSON.stringify(item.citation)}`}
               item={item}
               onHandleSend={handleSend}
               feedbackDisabled={feedbackDisabled}
@@ -263,4 +268,5 @@ const Chat: FC<IChatProps> = ({
   )
 }
 
-export default React.memo(Chat)
+export default Chat  // Remove React.memo()
+
